@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { Box, Typography, Divider } from "@mui/material";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import Recommendations from "../components/common/Recommendations";
+import Pagination from "@mui/material/Pagination";
 
 function GuestHome() {
   const [listEvent, setListEvent] = useState([]);
@@ -15,6 +16,16 @@ function GuestHome() {
   const [hotEvents, setHotEvents] = useState([]);
   const [searchParams] = useSearchParams();
   const lastViewedTypeEvent = localStorage.getItem("lastViewedTypeEvent");
+
+
+const [page, setPage] = useState(1);
+const limit = 8;
+
+
+const startIndex = (page - 1) * limit;
+const endIndex = startIndex + limit;
+const currentPageData = listEvent.slice(startIndex, endIndex);
+
 
   useEffect(() => {
     const getData = async () => {
@@ -26,8 +37,6 @@ function GuestHome() {
           permission: 1,
           isApprove: 1,
         };
-
-        // Thêm tham số name nếu có
         const nameParam = searchParams.get("name");
         if (nameParam) {
           queryParams.name = nameParam;
@@ -47,7 +56,6 @@ function GuestHome() {
 
         // Nếu đang ở trang Hot Events, lấy dữ liệu từ API thống kê vé
         if (showHotEvents) {
-          // Gọi API thống kê vé để lấy danh sách sự kiện bán chạy
           const statsResponse = await getTicketStats();
           if (
             statsResponse &&
@@ -180,9 +188,20 @@ function GuestHome() {
       </Box>
 
       <ListEvent
-        data={listEvent}
-        isHotEvents={searchParams.get("hot") === "true"}
-      />
+  data={currentPageData}
+  isHotEvents={searchParams.get("hot") === "true"}
+/>
+
+      {listEvent.length > limit && (
+      <Box display="flex" justifyContent="center" my={4}>
+        <Pagination
+          count={Math.ceil(listEvent.length / limit)}
+          page={page}
+          onChange={(event, value) => setPage(value)}
+          color="primary"
+        />
+      </Box>
+    )}
 
     </MainLayout>
   );

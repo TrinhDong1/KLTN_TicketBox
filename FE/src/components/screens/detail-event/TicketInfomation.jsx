@@ -127,7 +127,7 @@ function TicketInfomation({ ticket, eventId }) {
     <Box mt={8} id="ticket-information">
       <Paper>
         <Box p={2}>
-          <Typography variant="h6">THÔNG TIN SỰ KIỆN</Typography>
+          <Typography variant="h6">THÔNG TIN VÉ</Typography>
         </Box>
         <Divider />
         {ticketData?.length > 0 &&

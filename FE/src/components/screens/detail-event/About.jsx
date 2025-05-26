@@ -6,7 +6,7 @@ function About({ event }) {
     <Box mt={8} id="about">
       <Paper>
         <Box p={2}>
-          <Typography variant="h6">ABOUT</Typography>
+          <Typography variant="h6">Thông tin sự kiện</Typography>
         </Box>
         <Divider />
         <Box p={2}>

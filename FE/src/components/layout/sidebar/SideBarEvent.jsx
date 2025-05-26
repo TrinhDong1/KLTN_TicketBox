@@ -34,32 +34,33 @@ const TextBottom = styled(Typography)({
 });
 
 const listSidebarTop = [
-  { icon: "/img/sidebar1.png", name: "Home", path: "/" },
-  { icon: "/img/sidebar2.png", name: "Live music" },
-  { icon: "/img/sidebar3.png", name: "Theater - Art Culture" },
-  { icon: "/img/sidebar4.png", name: "Nightlift" },
-  { icon: "/img/sidebar5.png", name: "Community" },
-  { icon: "/img/sidebar6.png", name: "Course" },
-  { icon: "/img/sidebar7.png", name: "Attactions" },
-  { icon: "/img/sidebar8.png", name: "Sport" },
-  { icon: "/img/sidebar9.png", name: "Events at Ho Chi Minh City" },
-  { icon: "/img/sidebar10.png", name: "Events at Ha Noi" },
+  { icon: "/img/sidebar1.png", name: "Trang chủ", path: "/" },
+  { icon: "/img/sidebar2.png", name: "Nhạc sống" },
+  { icon: "/img/sidebar3.png", name: "Văn hóa nghệ thuật" },
+  { icon: "/img/sidebar4.png", name: "Sân khấu" },
+  { icon: "/img/sidebar5.png", name: "Cộng đồng" },
+  { icon: "/img/sidebar6.png", name: "Khóa học" },
+  { icon: "/img/sidebar7.png", name: "Tham quan" },
+  { icon: "/img/sidebar8.png", name: "Thể thao" },
+  { icon: "/img/sidebar9.png", name: "Sự kiện tại TP. Hồ Chí Minh" },
+  { icon: "/img/sidebar10.png", name: "Sự kiện tại Hà Nội" },
 ];
 
 const listSidebarBottom = [
-  { icon: "/img/sidebar11.png", name: "About us" },
-  { icon: "/img/sidebar12.png", name: "For Organizer" },
-  { icon: "/img/sidebar13.png", name: "FAQ" },
-  { icon: "/img/sidebar14.png", name: "Operational regulations" },
-  { icon: "/img/sidebar15.png", name: "Information privacy policy" },
-  { icon: "/img/sidebar16.png", name: "Dispute settlement policy" },
-  { icon: "/img/sidebar17.png", name: "Payment privacy policy" },
-  { icon: "/img/sidebar18.png", name: "Return and Inspection policy" },
-  { icon: "/img/sidebar19.png", name: "Shipping and Delivery" },
-  { icon: "/img/sidebar20.png", name: "Customer Terms of Use" },
-  { icon: "/img/sidebar21.png", name: "Organixer Terms of Use" },
-  { icon: "/img/sidebar22.png", name: "Payment Methods" },
+  { icon: "/img/sidebar11.png", name: "Về chúng tôi" },
+  { icon: "/img/sidebar12.png", name: "Dành cho nhà tổ chức" },
+  { icon: "/img/sidebar13.png", name: "Câu hỏi thường gặp" },
+  { icon: "/img/sidebar14.png", name: "Quy chế hoạt động" },
+  { icon: "/img/sidebar15.png", name: "Chính sách bảo mật thông tin" },
+  { icon: "/img/sidebar16.png", name: "Chính sách giải quyết tranh chấp" },
+  { icon: "/img/sidebar17.png", name: "Chính sách bảo mật thanh toán" },
+  { icon: "/img/sidebar18.png", name: "Chính sách đổi trả và kiểm hàng" },
+  { icon: "/img/sidebar19.png", name: "Vận chuyển và giao hàng" },
+  { icon: "/img/sidebar20.png", name: "Điều khoản sử dụng cho khách hàng" },
+  { icon: "/img/sidebar21.png", name: "Điều khoản sử dụng cho nhà tổ chức" },
+  { icon: "/img/sidebar22.png", name: "Phương thức thanh toán" },
 ];
+
 
 function SidebarEvent() {
   const naviagte = useNavigate();

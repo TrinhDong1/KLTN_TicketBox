@@ -28,6 +28,7 @@ module.exports = {
           _id: event._id,
           eventName: event.name || "Không có tên",
           eventImage: event.image || "",
+          typeEvent: event.typeEvent || null,
           timeStart: event.timeStart || "",
           timeEnd: event.timeEnd || "",
           isApprove: event.isApprove || 0,
@@ -38,6 +39,7 @@ module.exports = {
           transactions: 0,
         };
       });
+      console.log("eventStatsMap",eventStatsMap);
 
       allPayments.forEach((payment) => {
         const eventId = payment.event ? payment.event.toString() : null;

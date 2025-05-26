@@ -53,12 +53,13 @@ export default function InfoPaymentEvent() {
   const getListData = async () => {
     try {
       const res = await getByUserId(user?._id);
+        console.log("Dữ liệu thanh toán:", res.data); 
       setListPayment(res.data?.map((i) => ({ id: i._id, ...i })));
+     
     } catch (error) {
       console.log(error);
     }
   };
-
   useEffect(() => {
     user?._id && getListData();
   }, [user]);
@@ -69,6 +70,7 @@ export default function InfoPaymentEvent() {
       setUser(user);
     };
     getData();
+
   }, []);
 
   return (

@@ -22,13 +22,13 @@ function MainDetailContent({ event, recommend }) {
       <Container>
         <Box display={"flex"} gap={4} py={2} sx={{ cursor: "pointer" }}>
           <Typography variant="subtitle1" onClick={() => handleClick("about")}>
-            About
+            Thông tin sự kiện
           </Typography>
           <Typography
             variant="subtitle1"
             onClick={() => handleClick("ticket-information")}
           >
-            Thông tin sự kiện
+            Thông tin vé
           </Typography>          <Typography
             variant="subtitle1"
             onClick={() => handleClick("ratings")}

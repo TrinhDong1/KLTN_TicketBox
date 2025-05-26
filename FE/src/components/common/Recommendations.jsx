@@ -155,7 +155,7 @@ const Recommendations = ({ typeEvent }) => {
                         padding: "30px 16px 8px",
                       }}
                     >
-                      <Chip
+                      {/* <Chip
                         label={normalizedEvent.typeEvent === 1 ? "Event" : "Sport"}
                         size="small"
                         sx={{
@@ -164,7 +164,7 @@ const Recommendations = ({ typeEvent }) => {
                           fontWeight: "bold",
                           fontSize: "0.7rem",
                         }}
-                      />
+                      /> */}
                     </Box>
                   </Box>
                   <CardContent sx={{ flexGrow: 1, padding: "16px", paddingTop: "12px" }}>

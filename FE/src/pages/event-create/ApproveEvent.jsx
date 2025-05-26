@@ -37,7 +37,7 @@ export default function ApproveEvent() {
       ),
     },
     { field: "name", headerName: "Tên sự kiện", width: 200 },
-    { field: "address", headerName: "Địa điểm tổ chức", width: 150 },
+    // { field: "address", headerName: "Địa điểm tổ chức", width: 150 },
     {
       field: "typeEvent",
       headerName: "Loại sự kiện",
@@ -158,11 +158,7 @@ export default function ApproveEvent() {
                 Tên sự kiện: {infoEvent?.name}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
-              <Typography variant="subtitle2">
-                Địa điểm tổ chức: {infoEvent?.address}
-              </Typography>
-            </Grid>
+          
             <Grid item xs={6}>
               <Typography variant="subtitle2">
                 Ngày bắt đầu: {infoEvent?.timeStart}

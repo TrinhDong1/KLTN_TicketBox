@@ -49,7 +49,7 @@ const listSidebarTop = [
   { icon: "/img/sidebar1.png", name: "Trang chủ", path: "/", typeEvent: null },
   {
     icon: "/img/fire-icon.png",
-    name: "Sự kiện hấp dẫn",
+    name: "Sự kiện bán chạy nhất",
     path: "/?hot=true",
     isHot: true,
     customIcon: <LocalFireDepartmentIcon sx={{ color: "#ff4d4f" }} />,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Paper,
@@ -15,26 +15,30 @@ import {
   Grid,
   Alert,
   Snackbar,
-} from '@mui/material';
-import StarIcon from '@mui/icons-material/Star';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
-import { createRating, getEventRatings } from '../../../utils/api/rating';
-import moment from 'moment';
-import 'moment/locale/vi';
+} from "@mui/material";
+import StarIcon from "@mui/icons-material/Star";
+import StarOutlineIcon from "@mui/icons-material/StarOutline";
+import { createRating, getEventRatings } from "../../../utils/api/rating";
+import moment from "moment";
+import "moment/locale/vi";
+import { getByUserId } from "../../../utils/api/payment";
 
 function EventRating({ event }) {
-  const [user, setUser] = useState(null); const [userRating, setUserRating] = useState(0);
-  const [comment, setComment] = useState('');
+  const [user, setUser] = useState(null);
+  const [userRating, setUserRating] = useState(0);
+  const [comment, setComment] = useState("");
   const [ratings, setRatings] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [canRate, setCanRate] = useState(false);
   const [hasRated, setHasRated] = useState(false);
+  const [listPayment, setListPayment] = useState([]);
 
-  // Check if event has ended
+  const [hasPurchased, setHasPurchased] = useState(false);
+
   useEffect(() => {
     if (event && event.timeEnd) {
       const currentDate = new Date();
@@ -42,24 +46,46 @@ function EventRating({ event }) {
       setCanRate(currentDate > eventEndDate);
     }
   }, [event]);
+
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user'));
+    const userData = JSON.parse(localStorage.getItem("user"));
     setUser(userData);
+    if (userData) {
+      userData._id && LisData();
+    }
 
     if (event && event._id) {
       fetchRatings();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [event]);
+  useEffect(() => {
+    if (listPayment.length > 0 && event?._id) {
+      const isPurchased = listPayment.some(
+        (payment) => payment.event?._id === event._id
+      );
+      setHasPurchased(isPurchased);
+    }
+  }, [listPayment, event]);
 
-  // Check if user has already rated
+  const LisData = async () => {
+    try {
+      const res = await getByUserId(user?._id);
+      setListPayment(res.data?.map((i) => ({ id: i._id, ...i })));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    user?._id && LisData();
+  }, [user]);
+
   useEffect(() => {
     if (user && ratings.length > 0) {
-      const userRating = ratings.find(rating => rating.user._id === user._id);
+      const userRating = ratings.find((rating) => rating.user._id === user._id);
       if (userRating) {
         setHasRated(true);
         setUserRating(userRating.rating);
-        setComment(userRating.comment || '');
+        setComment(userRating.comment || "");
       } else {
         setHasRated(false);
       }
@@ -70,12 +96,17 @@ function EventRating({ event }) {
       const res = await getEventRatings(event._id);
       if (res.data) {
         // Filter out ratings with deleted users (where user is null or undefined)
-        const validRatings = res.data.data.filter(rating => rating.user != null);
+        const validRatings = res.data.data.filter(
+          (rating) => rating.user != null
+        );
         setRatings(validRatings);
 
         // Recalculate average rating based on valid ratings only
         if (validRatings.length > 0) {
-          const totalRating = validRatings.reduce((sum, rating) => sum + rating.rating, 0);
+          const totalRating = validRatings.reduce(
+            (sum, rating) => sum + rating.rating,
+            0
+          );
           const avgRating = totalRating / validRatings.length;
           setAverageRating(avgRating);
         } else {
@@ -88,15 +119,21 @@ function EventRating({ event }) {
   };
   const handleRatingSubmit = async () => {
     if (!user) {
-      setSnackbarMessage('Vui lòng đăng nhập để đánh giá sự kiện');
-      setSnackbarSeverity('warning');
+      setSnackbarMessage("Vui lòng đăng nhập để đánh giá sự kiện");
+      setSnackbarSeverity("warning");
       setOpenSnackbar(true);
       return;
     }
+    if (!hasPurchased) {
+    setSnackbarMessage('Bạn cần mua vé sự kiện này để có thể đánh giá.');
+    setSnackbarSeverity('warning');
+    setOpenSnackbar(true);
+    return;
+  }
 
     if (userRating === 0) {
-      setSnackbarMessage('Vui lòng chọn số sao để đánh giá');
-      setSnackbarSeverity('warning');
+      setSnackbarMessage("Vui lòng chọn số sao để đánh giá");
+      setSnackbarSeverity("warning");
       setOpenSnackbar(true);
       return;
     }
@@ -111,18 +148,20 @@ function EventRating({ event }) {
         comment: comment.trim() || null,
       });
 
-      setSnackbarMessage('Đã gửi đánh giá thành công');
-      setSnackbarSeverity('success');
+      setSnackbarMessage("Đã gửi đánh giá thành công");
+      setSnackbarSeverity("success");
       setOpenSnackbar(true);
 
       // Refresh ratings
       fetchRatings();
-      setComment('');
+      setComment("");
     } catch (err) {
       console.error("Error submitting rating:", err);
 
-      setSnackbarMessage(err.response?.data?.message || 'Có lỗi xảy ra khi gửi đánh giá');
-      setSnackbarSeverity('error');
+      setSnackbarMessage(
+        err.response?.data?.message || "Có lỗi xảy ra khi gửi đánh giá"
+      );
+      setSnackbarSeverity("error");
       setOpenSnackbar(true);
     } finally {
       setIsSubmitting(false);
@@ -132,7 +171,6 @@ function EventRating({ event }) {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-
   return (
     <Box mt={8} id="ratings">
       <Paper>
@@ -152,7 +190,7 @@ function EventRating({ event }) {
         </Box>
         <Divider />
 
-        {canRate ? (
+       {canRate ? (
           <Box p={2}>
             {!hasRated ? (
               <Grid container spacing={2}>
@@ -164,7 +202,12 @@ function EventRating({ event }) {
                       onChange={(event, newValue) => {
                         setUserRating(newValue);
                       }}
-                      emptyIcon={<StarOutlineIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                      emptyIcon={
+                        <StarOutlineIcon
+                          style={{ opacity: 0.55 }}
+                          fontSize="inherit"
+                        />
+                      }
                     />
                   </Box>
                 </Grid>
@@ -186,14 +229,12 @@ function EventRating({ event }) {
                     onClick={handleRatingSubmit}
                     disabled={isSubmitting || userRating === 0}
                   >
-                    {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
+                    {isSubmitting ? "Đang gửi..." : "Gửi đánh giá"}
                   </Button>
                 </Grid>
               </Grid>
             ) : (
-              <Alert severity="info">
-                Bạn đã đánh giá sự kiện này
-              </Alert>
+              <Alert severity="info">Bạn đã đánh giá sự kiện này</Alert>
             )}
           </Box>
         ) : (
@@ -207,44 +248,66 @@ function EventRating({ event }) {
         <Divider />
 
         <Box p={2}>
-          <Typography variant="h6" mb={2}>Nhận xét ({ratings.length})</Typography>
+          <Typography variant="h6" mb={2}>
+            Nhận xét ({ratings.length})
+          </Typography>
           {ratings.length > 0 ? (
             <List>
-              {ratings.map((rating) => (<React.Fragment key={rating._id}>
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Avatar alt={rating.user?.name || 'User'} src={rating.user?.image} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="subtitle1" fontWeight="bold">
-                          {rating.user?.name || 'Anonymous User'}
-                        </Typography>                          <Typography variant="body2" color="text.secondary">
-                          {moment(rating.createdAt).locale('vi').format('DD/MM/YYYY HH:mm')}
-                        </Typography>
-                      </Box>
-                    }
-                    secondary={
-                      <Box>
-                        <Box mt={0.5} mb={1}>
-                          <Rating value={rating.rating} size="small" readOnly />
-                        </Box>
-                        {rating.comment && (
-                          <Typography variant="body2" color="text.primary">
-                            {rating.comment}
+              {ratings.map((rating) => (
+                <React.Fragment key={rating._id}>
+                  <ListItem alignItems="flex-start">
+                    <ListItemAvatar>
+                      <Avatar
+                        alt={rating.user?.name || "User"}
+                        src={rating.user?.image}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                        >
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {rating.user?.name || "Anonymous User"}
+                          </Typography>{" "}
+                          <Typography variant="body2" color="text.secondary">
+                            {moment(rating.createdAt)
+                              .locale("vi")
+                              .format("DD/MM/YYYY HH:mm")}
                           </Typography>
-                        )}
-                      </Box>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-              </React.Fragment>
+                        </Box>
+                      }
+                      secondary={
+                        <Box>
+                          <Box mt={0.5} mb={1}>
+                            <Rating
+                              value={rating.rating}
+                              size="small"
+                              readOnly
+                            />
+                          </Box>
+                          {rating.comment && (
+                            <Typography variant="body2" color="text.primary">
+                              {rating.comment}
+                            </Typography>
+                          )}
+                        </Box>
+                      }
+                    />
+                  </ListItem>
+                  <Divider variant="inset" component="li" />
+                </React.Fragment>
               ))}
             </List>
           ) : (
-            <Typography variant="body1" color="text.secondary" align="center" py={2}>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              align="center"
+              py={2}
+            >
               Chưa có đánh giá nào cho sự kiện này
             </Typography>
           )}
@@ -255,9 +318,13 @@ function EventRating({ event }) {
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbarSeverity} sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

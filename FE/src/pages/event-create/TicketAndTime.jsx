@@ -31,25 +31,45 @@ function TicketAndTime() {
     return arr;
   };
 
-  const handleDateChangeStart = (index, value) => {
-    if (moment(getValues("timeStart")).isBefore(value)) {
-      notify(
-        "error",
-        "Thời gian mở bán vé phải lớn hơn thời gian bắt đầu sự kiện"
-      );
-      setValue(`timeTicketStart ${index}`, null);
-    }
-  };
+ const handleDateChangeStart = (index, value) => {
+  const today = moment().startOf("day");
+  const eventStart = moment(getValues("timeStart"));
 
-  const handleDateChangeEnd = (index, value) => {
-    if (moment(getValues("timeEnd")).isBefore(value)) {
-      notify(
-        "error",
-        "Thời gian đóng bán vé phải nhỏ hơn thời gian kết thúc sự kiện"
-      );
-      setValue(`timeTicketEnd ${index}`, null);
-    }
-  };
+  const selectedStart = moment(value);
+ if (selectedStart.isBefore(today)){
+    notify("error", "Thời gian bắt đầu bán vé ít nhất là ngày hôm nay");
+    setValue(`timeTicketStart ${index}`, null);
+    return;
+  }
+
+  if (!selectedStart.isBefore(eventStart)) {
+    notify("error", "Thời gian bắt đầu bán vé phải trước thời gian bắt đầu sự kiện");
+    setValue(`timeTicketStart ${index}`, null);
+    return;
+  }
+
+  setValue(`timeTicketStart ${index}`, value);
+};
+const handleDateChangeEnd = (index, value) => {
+  const eventEnd = moment(getValues("timeEnd"));
+  const selectedEnd = moment(value);
+  const selectedStart = moment(getValues(`timeTicketStart ${index}`));
+
+  if (!selectedEnd.isSameOrAfter(selectedStart)) {
+    notify("error", "Thời gian kết thúc bán vé phải bằng hoặc sau thời gian bắt đầu bán vé");
+    setValue(`timeTicketEnd ${index}`, null);
+    return;
+  }
+
+  if (!selectedEnd.isSameOrBefore(eventEnd)) {
+    notify("error", "Thời gian kết thúc bán vé phải trước hoặc bằng thời gian kết thúc sự kiện");
+    setValue(`timeTicketEnd ${index}`, null);
+    return;
+  }
+
+  setValue(`timeTicketEnd ${index}`, value);
+};
+
   useEffect(() => {
     const checkErrorEventInfo = () => {
       const eventInfo = JSON.parse(localStorage.getItem("eventInfo"));
@@ -84,8 +104,6 @@ function TicketAndTime() {
       const ticketAndTime = JSON.parse(localStorage.getItem("ticketAndTime"));
       const arrError = JSON.parse(localStorage.getItem("errorTicketAndTime"));
       const editingStatus = localStorage.getItem("isEditing") === "true";
-
-      // Cập nhật trạng thái chỉnh sửa
       setIsEditing(editingStatus);
 
       if (arrError) {
@@ -252,11 +270,47 @@ function TicketAndTime() {
     setArrComponentAddTicket(updatedComponents);
   };
 
+
   const handleContinue = (data) => {
-    localStorage.setItem("ticketAndTime", JSON.stringify(data));
-    localStorage.removeItem("errorTicketAndTime");
-    setListError([]);
-  };
+  localStorage.setItem("ticketAndTime", JSON.stringify(data));
+  localStorage.removeItem("errorTicketAndTime");
+  setListError([]);
+  navigate("/setting-event");
+};
+const handleChangeTimeStart = (value) => {
+  const today = moment().startOf("day");
+  let selected = moment(value);
+
+  // Nếu ngày chọn nhỏ hơn ngày hôm nay thì đặt lại ngày hôm nay
+  if (selected.isBefore(today)) {
+    notify("error", "Ngày bắt đầu sự kiện phải lớn hơn hoặc bằng ngày hôm nay");
+    selected = today;
+  }
+
+  const timeEnd = moment(getValues("timeEnd"));
+
+  setValue("timeStart", selected.format("YYYY-MM-DD"));
+
+  // Nếu ngày kết thúc đã chọn và nhỏ hơn hoặc bằng ngày bắt đầu mới thì reset ngày kết thúc
+  if (timeEnd.isValid() && !timeEnd.isAfter(selected)) {
+    setValue("timeEnd", selected.format("YYYY-MM-DD"));
+    notify("error", "Ngày kết thúc sự kiện phải lớn hơn hoặc bằng ngày bắt đầu sự kiện");
+  }
+};
+
+const handleChangeTimeEnd = (value) => {
+  const timeStart = moment(getValues("timeStart"));
+  let selected = moment(value);
+
+  // Nếu ngày kết thúc nhỏ hơn ngày bắt đầu thì đặt lại thành ngày bắt đầu
+  if (selected.isBefore(timeStart)) {
+    notify("error", "Ngày kết thúc sự kiện phải lớn hơn hoặc bằng ngày bắt đầu sự kiện");
+    selected = timeStart;
+  }
+
+  setValue("timeEnd", selected.format("YYYY-MM-DD"));
+};
+
 
   const clearLocalStorage = () => {
     localStorage.setItem("ticketAndTime", JSON.stringify({}));
@@ -339,6 +393,7 @@ function TicketAndTime() {
                   size="small"
                   fullWidth
                   {...register("timeStart")}
+                   onChange={(e) => handleChangeTimeStart(e.target.value)}
                 />
               </Box>
               <Box mt={2}>
@@ -350,6 +405,7 @@ function TicketAndTime() {
                   size="small"
                   fullWidth
                   {...register("timeEnd")}
+                  onChange={(e) => handleChangeTimeEnd(e.target.value)}
                 />
               </Box>
               <Box display={"flex"} justifyContent={"space-between"} mt={4}>
@@ -394,14 +450,15 @@ function TicketAndTime() {
                 }}
               >
                 Xóa
-              </Button>              <ButtonCustom
-                text={localStorage.getItem("isEditing") === "true" ? "Tiếp theo với chỉnh sửa" : "Tiếp theo"}
-                variant={"contained"}
-                onClick={handleSubmit((data) => {
-                  handleContinue(convertPayload(data));
-                  navigate("/setting-event");
-                })}
-              />
+              </Button>              
+             <ButtonCustom
+  text={localStorage.getItem("isEditing") === "true" ? "Tiếp theo với chỉnh sửa" : "Tiếp theo"}
+  variant={"contained"}
+  onClick={handleSubmit((data) => {
+    handleContinue(convertPayload(data));
+  })}
+/>
+
             </Box>
           </Paper>
         </Box>

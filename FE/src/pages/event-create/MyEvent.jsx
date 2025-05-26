@@ -279,7 +279,7 @@ export default function MyEvent() {
             </Grid>
             <Grid item xs={6}>
               <Typography variant="subtitle2">
-                Loại sự kiện: {listTypeEvent[infoEvent?.typeEvent - 1]?.label}
+                Loại sự kiện: {listTypeEvent[infoEvent?.typeEvent-1]?.label}
               </Typography>
             </Grid>
             <Grid item xs={6}>
