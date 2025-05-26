@@ -76,12 +76,10 @@ const TicketManager = () => {
       setDetailLoading(false);
     }
   };
-const approvedCount = statsData && statsData.allStats
-  ? statsData.allStats.filter(item => item.isApprove === 1).length
-  : 0;
-
-
-  
+  const approvedCount =
+    statsData && statsData.allStats
+      ? statsData.allStats.filter((item) => item.isApprove === 1).length
+      : 0;
 
   const handleCloseDetailDialog = () => {
     setOpenDetailDialog(false);
@@ -579,8 +577,12 @@ const approvedCount = statsData && statsData.allStats
                   <TableHead>
                     <TableRow>
                       <TableCell>STT</TableCell>
-                      <TableCell>Tên sự kiện</TableCell>
-                      <TableCell align="center">Thời gian</TableCell>
+                      <TableCell sx={{ width: 200 }}>
+                        Tên sự kiện
+                      </TableCell>{" "}
+                      <TableCell align="center" sx={{ width: 250 }}>
+                        Thời gian
+                      </TableCell>{" "}
                       <TableCell align="center">Số vé đã bán</TableCell>
                       <TableCell align="right">Doanh thu</TableCell>
                       <TableCell align="center">Thao tác</TableCell>
