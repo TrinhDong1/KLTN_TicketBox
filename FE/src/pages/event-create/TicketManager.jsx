@@ -76,7 +76,10 @@ const TicketManager = () => {
       setDetailLoading(false);
     }
   };
- const approvedCount = statsData.allStats.filter(item => item.isApprove === 1).length;
+const approvedCount = statsData && statsData.allStats
+  ? statsData.allStats.filter(item => item.isApprove === 1).length
+  : 0;
+
 
   const handleCloseDetailDialog = () => {
     setOpenDetailDialog(false);
@@ -478,22 +481,27 @@ const TicketManager = () => {
               <Grid item xs={12} sm={6} md={4}>
                 <Card>
                   <CardContent sx={{ display: "flex", alignItems: "center" }}>
-  <Event sx={{ fontSize: 40, mr: 2, color: "#1976d2" }} />
-  <Box>
-    <Typography color="textSecondary" gutterBottom>
-      Tổng số sự kiện
-    </Typography>
-    <Typography variant="h4" component="div" sx={{ display: "flex", alignItems: "center" }}>
-  {statsData.totalEvents}
-  <Typography variant="subtitle2" component="span" sx={{ ml: 1, color: "text.secondary" }}>
-    Đã Duyệt {approvedCount}
-  </Typography>
-</Typography>
-
- 
-  </Box>
-</CardContent>
-
+                    <Event sx={{ fontSize: 40, mr: 2, color: "#1976d2" }} />
+                    <Box>
+                      <Typography color="textSecondary" gutterBottom>
+                        Tổng số sự kiện
+                      </Typography>
+                      <Typography
+                        variant="h4"
+                        component="div"
+                        sx={{ display: "flex", alignItems: "center" }}
+                      >
+                        {statsData.totalEvents}
+                        <Typography
+                          variant="subtitle2"
+                          component="span"
+                          sx={{ ml: 1, color: "text.secondary" }}
+                        >
+                          Đã Duyệt {approvedCount}
+                        </Typography>
+                      </Typography>
+                    </Box>
+                  </CardContent>
                 </Card>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
