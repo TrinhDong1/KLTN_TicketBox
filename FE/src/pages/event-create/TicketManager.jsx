@@ -81,6 +81,8 @@ const approvedCount = statsData && statsData.allStats
   : 0;
 
 
+  
+
   const handleCloseDetailDialog = () => {
     setOpenDetailDialog(false);
     setEventDetail(null);
